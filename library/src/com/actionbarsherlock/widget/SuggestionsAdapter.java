@@ -16,6 +16,8 @@
 
 package com.actionbarsherlock.widget;
 
+import com.actionbarsherlock.R;
+
 import android.app.SearchDialog;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -99,7 +101,7 @@ class SuggestionsAdapter extends ResourceCursorAdapter implements OnClickListene
                             SearchableInfo searchable,
                             WeakHashMap<String, Drawable.ConstantState> outsideDrawablesCache) {
     super(context,
-        com.android.internal.R.layout.search_dropdown_item_icons_2line,
+        R.layout.search_dropdown_item_icons_2line,
         null,   // no initial cursor
         true);  // auto-requery
     mSearchManager = (SearchManager) mContext.getSystemService(Context.SEARCH_SERVICE);
@@ -297,11 +299,11 @@ class SuggestionsAdapter extends ResourceCursorAdapter implements OnClickListene
     public final ImageView mIconRefine;
 
     public ChildViewCache(View v) {
-      mText1 = (TextView) v.findViewById(com.android.internal.R.id.text1);
-      mText2 = (TextView) v.findViewById(com.android.internal.R.id.text2);
-      mIcon1 = (ImageView) v.findViewById(com.android.internal.R.id.icon1);
-      mIcon2 = (ImageView) v.findViewById(com.android.internal.R.id.icon2);
-      mIconRefine = (ImageView) v.findViewById(com.android.internal.R.id.edit_query);
+      mText1 = (TextView) v.findViewById(R.id.text1);
+      mText2 = (TextView) v.findViewById(R.id.text2);
+      mIcon1 = (ImageView) v.findViewById(R.id.icon1);
+      mIcon2 = (ImageView) v.findViewById(R.id.icon2);
+      mIconRefine = (ImageView) v.findViewById(R.id.edit_query);
     }
   }
 

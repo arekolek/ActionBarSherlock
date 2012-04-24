@@ -404,4 +404,19 @@
         <!-- Gravity setting for positioning the currently selected item. -->
         <attr name="android:gravity" />
     </declare-styleable>
+
+    <declare-styleable name="SherlockSearchView">
+        <!-- The default state of the SearchView. If true, it will be iconified when not in
+             use and expanded when clicked. -->
+        <attr name="android:iconifiedByDefault"/>
+        <!-- An optional maximum width of the SearchView. -->
+        <attr name="android:maxWidth" />
+        <!-- An optional query hint string to be displayed in the empty query field. -->
+        <attr name="android:queryHint" />
+        <!-- The IME options to set on the query text field. -->
+        <attr name="android:imeOptions" />
+        <!-- The input type to set on the query text field. -->
+        <attr name="android:inputType" />
+    </declare-styleable>
+
 </resources>

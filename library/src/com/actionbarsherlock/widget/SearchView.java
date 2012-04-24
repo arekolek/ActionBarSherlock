@@ -18,6 +18,8 @@ package com.actionbarsherlock.widget;
 
 import static com.actionbarsherlock.widget.SuggestionsAdapter.getColumnString;
 
+import com.actionbarsherlock.R;
+
 import android.app.PendingIntent;
 import android.app.SearchManager;
 import android.app.SearchableInfo;
@@ -35,7 +37,7 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
+import android.os.ResultReceiver;
 import android.speech.RecognizerIntent;
 import android.support.v4.widget.CursorAdapter;
 import android.text.Editable;
@@ -63,8 +65,6 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
-
-import com.actionbarsherlock.R;
 
 import java.util.WeakHashMap;
 
@@ -148,7 +148,12 @@ public class SearchView extends LinearLayout implements CollapsibleActionView {
           getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 
       if (imm != null) {
-        imm.showSoftInputUnchecked(0, null);
+        // TODO I'm not sure if reflection is what we want
+        try {
+          InputMethodManager.class.getMethod("showSofInputUnchecked", int.class,
+              ResultReceiver.class).invoke(imm, 0, null);
+        } catch (Exception e) {
+        }
       }
     }
   };
@@ -287,21 +292,21 @@ public class SearchView extends LinearLayout implements CollapsibleActionView {
       }
     });
 
-    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SearchView, 0, 0);
-    setIconifiedByDefault(a.getBoolean(R.styleable.SearchView_iconifiedByDefault, true));
-    int maxWidth = a.getDimensionPixelSize(R.styleable.SearchView_maxWidth, -1);
+    TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.SherlockSearchView, 0, 0);
+    setIconifiedByDefault(a.getBoolean(R.styleable.SherlockSearchView_android_iconifiedByDefault, true));
+    int maxWidth = a.getDimensionPixelSize(R.styleable.SherlockSearchView_android_maxWidth, -1);
     if (maxWidth != -1) {
       setMaxWidth(maxWidth);
     }
-    CharSequence queryHint = a.getText(R.styleable.SearchView_queryHint);
+    CharSequence queryHint = a.getText(R.styleable.SherlockSearchView_android_queryHint);
     if (!TextUtils.isEmpty(queryHint)) {
       setQueryHint(queryHint);
     }
-    int imeOptions = a.getInt(R.styleable.SearchView_imeOptions, -1);
+    int imeOptions = a.getInt(R.styleable.SherlockSearchView_android_imeOptions, -1);
     if (imeOptions != -1) {
       setImeOptions(imeOptions);
     }
-    int inputType = a.getInt(R.styleable.SearchView_inputType, -1);
+    int inputType = a.getInt(R.styleable.SherlockSearchView_android_inputType, -1);
     if (inputType != -1) {
       setInputType(inputType);
     }
@@ -310,10 +315,21 @@ public class SearchView extends LinearLayout implements CollapsibleActionView {
 
     boolean focusable = true;
 
-    a = context.obtainStyledAttributes(attrs, R.styleable.View, 0, 0);
-    focusable = a.getBoolean(R.styleable.View_focusable, focusable);
-    a.recycle();
-    setFocusable(focusable);
+    // TODO I'm not sure if reflection is what we want
+    try {
+      Class<?> androidRstyleable = Class.forName("android.R$styleable");
+      int[] rStyleableView = (int[]) androidRstyleable.getField("View").get(
+          androidRstyleable);
+      int rStyleableViewFocusable = androidRstyleable.getField("View_focusable").getInt(
+          androidRstyleable);
+
+      a = context.obtainStyledAttributes(attrs, rStyleableView, 0, 0);
+      focusable = a.getBoolean(rStyleableViewFocusable, focusable);
+      a.recycle();
+      setFocusable(focusable);
+      
+    } catch (Exception e) {
+    }
 
     // Save voice intent for later queries/launching
     mVoiceWebSearchIntent = new Intent(RecognizerIntent.ACTION_WEB_SEARCH);
@@ -992,7 +1008,7 @@ public class SearchView extends LinearLayout implements CollapsibleActionView {
 
   private int getSearchIconId() {
     TypedValue outValue = new TypedValue();
-    getContext().getTheme().resolveAttribute(com.android.internal.R.attr.searchViewSearchIcon,
+    getContext().getTheme().resolveAttribute(R.attr.searchViewSearchIcon,
         outValue, true);
     return outValue.resourceId;
   }
@@ -1350,7 +1366,7 @@ public class SearchView extends LinearLayout implements CollapsibleActionView {
    * Sets the text in the query box, without updating the suggestions.
    */
   private void setQuery(CharSequence query) {
-    mQueryTextView.setText(query, true);
+    mQueryTextView.setText(query);
     // Move the cursor to the end
     mQueryTextView.setSelection(TextUtils.isEmpty(query) ? 0 : query.length());
   }
